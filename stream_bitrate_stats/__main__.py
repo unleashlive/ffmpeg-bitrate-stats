@@ -81,6 +81,8 @@ class BitrateStats:
         self.moving_avg_bitrate = []
         self.frames = []
         self.bitrate_stats = {}
+        self.width = 0
+        self.height = 0
 
         self.rounding_factor = 3
 
@@ -110,7 +112,7 @@ class BitrateStats:
             "-show_format",
             "-show_packets",
             "-show_entries",
-            "packet=pts_time,dts_time,duration_time,size,flags,stream_index : stream=index,codec_type",
+            "packet=pts_time,dts_time,duration_time,size,flags,stream_index : stream=index,codec_type,width,height",
             "-of",
             "json",
             self.input_file,
@@ -130,6 +132,10 @@ class BitrateStats:
 
         self.contains_audio = self.__get_stream_index_by_codec_type(streams_list, "audio") != -1
         video_packets = self.__filter_video_packets(av_packets, self.__get_stream_index_by_codec_type(streams_list, "video"))
+
+        video_stream = streams_list[self.__get_stream_index_by_codec_type(streams_list, "video")]
+        self.width = video_stream.get("width")
+        self.height = video_stream.get("height")
 
         ret = []
         idx = 1
@@ -338,6 +344,8 @@ class BitrateStats:
             "chunk_size": self.chunk_size,
             "duration": round(self.duration, self.rounding_factor),
             "contains_audio": str(self.contains_audio),
+            "width": self.width,
+            "height": self.height,
         }
 
         self.bitrate_stats = ret
