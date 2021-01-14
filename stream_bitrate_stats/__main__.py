@@ -107,6 +107,9 @@ class BitrateStats:
             "ffprobe",
             "-loglevel",
             "error",
+            "-select_streams" if self.stream_type in {"video", "audio"} else None,
+            "v" if self.stream_type == "video" else None,
+            "a" if self.stream_type == "audio" else None,
             "-analyzeduration", str(self.chunk_size*1000000),
             "-read_intervals", "%+"+str(self.chunk_size),
             "-show_format",
@@ -117,6 +120,7 @@ class BitrateStats:
             "json",
             self.input_file,
         ]
+        cmd = [param for param in cmd if param]
         if self.verbose:
             print_stderr(f"ffprobe command: {' '.join(cmd)}")
 
@@ -133,7 +137,7 @@ class BitrateStats:
         self.contains_audio = self.__get_stream_index_by_codec_type(streams_list, "audio") != -1
         video_packets = self.__filter_video_packets(av_packets, self.__get_stream_index_by_codec_type(streams_list, "video"))
 
-        video_stream = streams_list[self.__get_stream_index_by_codec_type(streams_list, "video")]
+        video_stream = streams_list[self.__get_stream_array_index_by_codec_type(streams_list, "video")]
         self.width = video_stream.get("width")
         self.height = video_stream.get("height")
 
@@ -211,6 +215,13 @@ class BitrateStats:
         for stream in streams_list:
             if codec_type == stream["codec_type"]:
                 return stream["index"]
+        return -1
+        # raise SystemError("No stream for given codec found found")
+
+    def __get_stream_array_index_by_codec_type(self, streams_list, codec_type):
+        for i, stream in enumerate(streams_list):
+            if codec_type == stream["codec_type"]:
+                return i
         return -1
         # raise SystemError("No stream for given codec found found")
 
