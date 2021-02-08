@@ -36,11 +36,9 @@ Response:
 
 ```
 
-[![PyPI version](https://badge.fury.io/py/ffmpeg_bitrate_stats.svg)](https://badge.fury.io/py/ffmpeg_bitrate_stats)
-
 Simple script for calculating bitrate statistics using FFmpeg.
 
-Author: Werner Robitza <werner.robitza@gmail.com>
+Maintainer: Unleash live
 
 Contents:
 
@@ -196,7 +194,11 @@ BigBuckBunny.mp4,21,video,60.002,38072,8002.859,7849.263,14565.117,3876.533,1.82
 
 ## License
 
-stream_bitrate_stats, Copyright (c) 2019 Werner Robitza
+stream_bitrate_stats, Copyright (c) 2019 Unleash live
+
+Based on:
+
+ffmpeg_bitrate_stats, Copyright (c) 2019 Werner Robitza
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
