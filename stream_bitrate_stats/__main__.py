@@ -139,7 +139,6 @@ class BitrateStats:
         audio_packets = self.__filter_video_packets(av_packets, self.__get_stream_index_by_codec_type(streams_list, "audio"))
 
         video_stream = streams_list[self.__get_stream_array_index_by_codec_type(streams_list, "video")]
-        audio_stream = streams_list[self.__get_stream_array_index_by_codec_type(streams_list, "audio")] if self.contains_audio else []
 
         if video_stream:
             self.width = video_stream.get("width", 0)
