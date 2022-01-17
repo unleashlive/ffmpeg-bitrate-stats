@@ -136,19 +136,38 @@ class BitrateStats:
 
         self.contains_audio = self.__get_stream_index_by_codec_type(streams_list, "audio") != -1
         video_packets = self.__filter_video_packets(av_packets, self.__get_stream_index_by_codec_type(streams_list, "video"))
+        audio_packets = self.__filter_video_packets(av_packets, self.__get_stream_index_by_codec_type(streams_list, "audio"))
 
         video_stream = streams_list[self.__get_stream_array_index_by_codec_type(streams_list, "video")]
-        self.width = video_stream.get("width")
-        self.height = video_stream.get("height")
+
+        if video_stream:
+            self.width = video_stream.get("width", 0)
+            self.height = video_stream.get("height", 0)
+        elif "format" in response and "tags" in response["format"]:
+            tags = response["format"]["tags"]
+            self.width = tags.get("displayWidth", 0)
+            self.height = tags.get("displayHeight", 0)
 
         ret = []
         idx = 1
 
-        default_duration = next(
-            (x["duration_time"] for x in video_packets if "duration_time" in x.keys()), "NaN"
-        )
+        default_duration = 0
+        if video_packets:
+            default_duration = next(
+                (x["duration_time"] for x in video_packets if "duration_time" in x.keys()), "NaN"
+            )
+        elif audio_packets:
+            default_duration = next(
+                (x["duration_time"] for x in audio_packets if "duration_time" in x.keys()), "NaN"
+            )
 
-        for packet_info in video_packets:
+        packets = []
+        if video_packets:
+            packets = video_packets
+        elif audio_packets:
+            packets = audio_packets
+
+        for packet_info in packets:
             frame_type = "I" if packet_info["flags"] == "K_" else "Non-I"
 
             try:
@@ -182,7 +201,7 @@ class BitrateStats:
             idx += 1
 
         # fix for missing durations, estimate it via PTS
-        if default_duration == "NaN":
+        if default_duration == "NaN" and ret:
             ret = self._fix_durations(ret)
 
         self.frames = ret
