@@ -33,7 +33,11 @@ def run_command(cmd, dry_run=False, verbose=False):
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
 
+    if verbose:
+        print_stderr(stdout.decode("utf-8"))
+
     if process.returncode == 0:
+        print_stderr(stderr.decode("utf-8"))
         return stdout.decode("utf-8"), stderr.decode("utf-8")
     else:
         print_stderr("[error] running command: {}".format(" ".join(cmd)))
